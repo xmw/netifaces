@@ -1162,7 +1162,26 @@ initnetifaces (void)
   WSAStartup(MAKEWORD (2, 2), &wsad);
 #endif
 
+#if PY_MAJOR_VERSION >= 3
+  static struct PyModuleDef moduledef = {
+      PyModuleDef_HEAD_INIT,
+      "netifaces",     /* m_name */
+      "This is a module",  /* m_doc */
+      -1,                  /* m_size */
+      methods,             /* m_methods */
+      NULL,                /* m_reload */
+      NULL,                /* m_traverse */
+      NULL,                /* m_clear */
+      NULL,                /* m_free */
+  };
+  m = PyModule_Create(&moduledef);
+
+  #define PyString_FromString PyBytes_FromString
+  #define PyInt_FromLong PyLong_FromLong
+#else
   m = Py_InitModule ("netifaces", methods);
+#endif
+
 
   /* Address families (auto-detect using #ifdef) */
   address_family_dict = PyDict_New();
